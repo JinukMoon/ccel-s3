@@ -16,7 +16,7 @@
 <script src="js/stage.js" defer></script>
 </head>
 <body>
-<a class="skip" href="#research">Skip to content</a>
+<a class="skip" href="#news">Skip to content</a>
 <div class="rail" id="site-menu"></div>
 
 <div class="shell">
@@ -37,73 +37,46 @@
         <div class="stage-card">
           <p class="eyebrow" data-f="affiliation"></p>
           <h1 id="lab-name" data-f="name"></h1>
-          <p class="identity" data-f="headline"></p>
+          <p class="identity" data-f="tagline"></p>
         </div>
         <div class="stage-frame"><span class="stage-cue">Scroll</span></div>
       </div>
     </div>
   </section>
 
+  <!-- Landing = the key information only, as on the current Welcome page.
+       Research, people and the full publication list live on their own pages. -->
   <div class="sheet">
-    <section class="sec" id="research" aria-labelledby="h-research">
-      <div class="wrap">
-        <header class="sec-head"><span class="sec-num">01</span><h2 id="h-research">Research</h2></header>
-        <div class="research-intro">
-          <div data-r="intro"></div>
-          <figure class="figure" data-r="figure"></figure>
-        </div>
-        <ol class="areas" data-r="areas"></ol>
-      </div>
-    </section>
-
-    <section class="sec alt" id="publications" aria-labelledby="h-pubs">
-      <div class="wrap">
-        <header class="sec-head"><span class="sec-num">02</span><h2 id="h-pubs">Publications</h2>
-          <a class="sec-link more" href="publications.html">Full publication list</a></header>
-        <div class="sub-head"><h3>Selected Publications</h3><p>Pinned by the professor, labelled by research area</p></div>
-        <ol class="papers" data-p="pins"></ol>
-        <div class="sub-head" style="margin-top:56px"><h3>Recent Highlights</h3><p>Lab-led papers of the last three years, updated with each new paper</p></div>
-        <ol class="papers" data-p="highlights"></ol>
-        <details class="rules"><summary>How these two lists are chosen</summary><p data-p="rules"></p></details>
-        <div class="pub-facts" data-p="facts"></div>
-      </div>
-    </section>
-
-    <section class="sec" id="people" aria-labelledby="h-people">
-      <div class="wrap">
-        <header class="sec-head"><span class="sec-num">03</span><h2 id="h-people">People</h2>
-          <a class="sec-link more" href="members.html">All members and alumni</a></header>
-        <div class="prof" data-m="prof"></div>
-        <ul class="counts" data-m="counts"></ul>
-        <div class="sub-head"><h3 data-m="preview-title"></h3></div>
-        <ul class="people" data-m="preview"></ul>
-      </div>
-    </section>
-
-    <div class="sec alt">
+    <div class="sec">
       <div class="wrap two">
         <section id="news" aria-labelledby="h-news">
-          <header class="sec-head"><span class="sec-num">04</span><h2 id="h-news">News</h2></header>
-          <ol class="news" data-n="news"></ol>
+          <header class="sec-head"><span class="sec-num">01</span><h2 id="h-news">News</h2></header>
+          <ul class="news" data-n="news"></ul>
         </section>
-        <section id="join" aria-labelledby="h-join">
-          <header class="sec-head"><span class="sec-num">05</span><h2 id="h-join">Join Us</h2></header>
-          <div class="join-box" data-n="join"></div>
+        <section id="opening" aria-labelledby="h-open">
+          <header class="sec-head"><span class="sec-num">02</span><h2 id="h-open">Open Position</h2></header>
+          <div class="join-box" data-n="opening"></div>
         </section>
       </div>
     </div>
 
-    <section class="sec" id="contact" aria-labelledby="h-contact">
+    <section class="sec alt" id="selected" aria-labelledby="h-sel">
       <div class="wrap">
-        <header class="sec-head"><span class="sec-num">06</span><h2 id="h-contact">Contact</h2></header>
-        <div class="contact" data-c="contact"></div>
-        <div class="sub-head" style="margin-top:56px"><h3>Sponsors</h3></div>
-        <ul class="sponsors" data-c="sponsors"></ul>
+        <header class="sec-head"><span class="sec-num">03</span><h2 id="h-sel">Selected Publications</h2></header>
+        <ol class="pins" data-p="pins"></ol>
+        <p class="pins-more"><a class="more" href="publications.html#selected">Selected publications and recent highlights</a></p>
+      </div>
+    </section>
+
+    <section class="sec" id="about" aria-labelledby="h-about">
+      <div class="wrap">
+        <header class="sec-head"><span class="sec-num">04</span><h2 id="h-about">About CCEL</h2></header>
+        <div class="about" data-a="about"></div>
       </div>
     </section>
   </div>
 </main>
-<footer class="foot" data-foot></footer>
+<footer class="foot" id="contact" aria-labelledby="h-contact" data-foot></footer>
 </div>
 <noscript><p style="padding:24px;background:#fff">This page renders its content from the lab data file and needs JavaScript.</p></noscript>
 </body>

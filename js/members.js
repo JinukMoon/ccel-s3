@@ -1,4 +1,4 @@
-/* People page: professor, current members by data group, alumni. All from window.CCEL. */
+/* Members page: professor, current members by data group, alumni. All from window.CCEL. */
 (function () {
   'use strict';
   const S = window.S3, D = S.D, { esc, asset } = S;
@@ -14,7 +14,8 @@
   $('[data-m=sub]').innerHTML = `<strong>${nNow}</strong> current members in ${groups.length} groups and <strong>${nAlu}</strong> alumni.`;
 
   $('[data-m=tabs]').innerHTML = ['<a href="#professor">Professor</a>']
-    .concat(groups.map(g => `<a href="#${slug(g.group)}">${esc(g.group)}</a>`), ['<a href="#alumni">Alumni</a>']).join('');
+    .concat(groups.map(g => `<a href="#${slug(g.group)}">${esc(g.group)}</a>`), ['<a href="#alumni">Alumni</a>'],
+      D.contact.group_photo ? ['<a href="#group-photo">Group photo</a>'] : []).join('');
 
   /* professor */
   const p = D.professor;
@@ -53,6 +54,11 @@
       <h3>${esc(g.group)} <span class="small">${g.people.length}</span></h3>
       <ul class="people">${g.people.map(x => S.personCard(x, g.group, { alumni: true, full: true, tag: 'h4' })).join('')}</ul>
     </div>`).join('');
+
+  /* group photo (moved here from the landing page in round v5) */
+  const gp = D.contact.group_photo;
+  if (gp) $('[data-m=photo]').innerHTML = `<img data-src="${esc(asset(gp))}" alt="${esc(D.lab.short)} group photo" decoding="async" width="6944" height="4496">`;
+  else $('[data-m=photo-sec]').remove();
 
   /* computational / experimental filter */
   const seg = $('[data-m=seg]'), note = $('[data-m=seg-note]');

@@ -165,35 +165,36 @@
     return `<li class="person" data-type="${esc(p.type || '')}"><div class="ph">${img}</div><div class="body">${lines.join('')}${linkIcons(p.links, nm.name)}</div></li>`;
   }
 
-  /* chrome: rail (desktop) doubles as the menu overlay (narrow), topbar logo, footer */
-  const NAV = [
-    ['01', 'Research', 'research', null],
-    ['02', 'Publications', 'publications', 'publications.html'],
-    ['03', 'People', 'people', 'members.html'],
-    ['04', 'News', 'news', null],
-    ['05', 'Join Us', 'join', null],
-    ['06', 'Contact', 'contact', null],
+  /* chrome: rail (desktop) doubles as the menu overlay (narrow), topbar logo, footer.
+     Six tabs on every page (as on the current site). Under the current tab a numbered "on this page"
+     list (landing sections 01-04, research areas I-V) keeps the cinematic numbered index. */
+  const TABS = [
+    { key: 'home', label: 'Welcome', href: 'index.html' },
+    { key: 'professor', label: 'Professor', href: 'members.html#professor' },
+    { key: 'members', label: 'Members', href: 'members.html' },
+    { key: 'research', label: 'Research', href: 'research.html' },
+    { key: 'publications', label: 'Publications', href: 'publications.html' },
+    { key: 'contact', label: 'Contact', href: 'index.html#contact' },
   ];
+  const PAGE_LABEL = { home: 'Welcome', members: 'Members', research: 'Research', publications: 'Publications' };
   const logoAlt = () => `${D.lab.short} logo: ${D.lab.name}`;
   const logoImg = () => `<img class="ccel-logo" src="${esc(asset(D.lab.logo))}" alt="${esc(logoAlt())}" width="1304" height="664">`;
+  // on the landing page its own targets become in-page anchors
+  const tabHref = (t, home) => (home ? (t.key === 'home' ? '#main' : t.key === 'contact' ? '#contact' : t.href) : t.href);
 
-  function renderChrome(page) {
+  // sub: [{ id, n, label }] for the current page; label may hold <sub>/<sup> (rich)
+  function renderChrome(page, sub) {
     const home = page === 'home';
-    document.title = (page === 'home' ? '' : (page === 'members' ? 'People' : 'Publications') + ' | ') + `${D.lab.short}, ${D.lab.name}`;
-    const navHref = n => (home ? '#' + n[2] : (n[3] || 'index.html#' + n[2]));
+    document.title = (home ? '' : PAGE_LABEL[page] + ' | ') + `${D.lab.short}, ${D.lab.name}`;
+    const subList = (sub && sub.length)
+      ? `<ol class="rail-sub" aria-label="On this page">${sub.map(s =>
+        `<li><a href="#${esc(s.id)}" data-sec="${esc(s.id)}"><span class="n">${esc(s.n)}</span><span>${s.label}</span></a></li>`).join('')}</ol>` : '';
     const rail = document.getElementById('site-menu');
     rail.innerHTML = `
       <a class="ccel-logo-plate" href="index.html">${logoImg()}</a>
       <button class="rail-close" type="button">Close</button>
-      <nav class="rail-nav" aria-label="Main"><ol>${NAV.map(n =>
-        `<li><a href="${navHref(n)}" data-sec="${n[2]}"${(page === 'publications' && n[2] === 'publications') || (page === 'members' && n[2] === 'people') ? ' aria-current="page"' : ''}><span class="n">${n[0]}</span><span>${n[1]}</span></a></li>`).join('')}</ol></nav>
-      <nav class="rail-pages" aria-label="Pages"><h2>Pages</h2><ul>
-        ${home ? '' : '<li><a href="index.html">Home</a></li>'}
-        <li><a href="members.html#professor">Professor</a></li>
-        <li><a href="members.html">Members and alumni</a></li>
-        <li><a href="publications.html">Publication list</a></li>
-        <li><a href="publications.html#covers">Journal covers</a></li>
-      </ul></nav>
+      <nav class="rail-nav" aria-label="Main"><ul>${TABS.map(t =>
+        `<li><a class="tab" href="${tabHref(t, home)}"${t.key === page ? ' aria-current="page"' : ''}>${t.label}</a>${t.key === page ? subList : ''}</li>`).join('')}</ul></nav>
       <p class="rail-mail">${esc(D.lab.affiliation)}<br><a href="mailto:${esc(D.contact.email)}">${esc(D.contact.email)}</a></p>`;
 
     /* narrow screens: Menu sits in the page header next to the logo (in flow, never over text).
@@ -205,7 +206,7 @@
     });
     const bar = document.createElement('div');
     bar.className = 'minibar';
-    bar.innerHTML = `<span class="minibar-label">${home ? '' : (page === 'members' ? 'People' : 'Publications')}</span>${menuBtn}`;
+    bar.innerHTML = `<span class="minibar-label">${esc(PAGE_LABEL[page] || '')}</span>${menuBtn}`;
     document.body.appendChild(bar);
 
     let opener = null;
@@ -236,17 +237,47 @@
       showBar(dy < 0 && !headInView);
     }, { passive: true });
 
+    /* footer = Contact (index.html#contact), the same on every page */
     const foot = document.querySelector('[data-foot]');
     if (foot) {
       const c = D.contact;
+      const row = (k, v) => (v ? `<dt>${k}</dt><dd>${v}</dd>` : '');
       foot.innerHTML = `<div class="wrap">
         <a class="ccel-logo-plate" href="index.html">${logoImg()}</a>
-        <div><p><strong>${esc(c.lab_name)}</strong></p><p>${esc(c.address)}</p>
-          <p><a href="mailto:${esc(c.email)}">${esc(c.email)}</a></p></div>
-        <nav aria-label="Footer"><ul>${NAV.map(n => `<li><a href="${home ? '#' + n[2] : (n[3] || 'index.html#' + n[2])}">${n[1]}</a></li>`).join('')}</ul></nav>
+        <div class="foot-contact">
+          <h2 id="h-contact">Contact</h2>
+          <p class="foot-lab">${esc(c.lab_name)}</p>
+          <dl>
+            ${row('Address', esc(c.address))}
+            ${row('Email', c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : '')}
+            ${row('Professor office', esc(c.professor_office))}
+            ${row('Laboratory', esc(c.laboratory))}
+            ${row('Student office', esc(c.student_office))}
+          </dl>
+        </div>
+        <nav aria-label="Footer"><ul>${TABS.map(t => `<li><a href="${tabHref(t, home)}">${t.label}</a></li>`).join('')}</ul></nav>
         <p class="copy">&copy; ${new Date().getFullYear()} ${esc(D.lab.short)}, ${esc(D.lab.affiliation)}</p>
       </div>`;
     }
+  }
+
+  /* the numbered "on this page" list follows the section(s) in view; the slim bar repeats it */
+  function spy(fallback) {
+    const links = [...document.querySelectorAll('.rail-sub a[data-sec]')];
+    if (!links.length || !('IntersectionObserver' in window)) return;
+    const on = new Set();
+    const paint = () => {
+      let first = null;
+      links.forEach(a => {
+        if (on.has(a.dataset.sec)) { a.setAttribute('aria-current', 'location'); first = first || a; } else a.removeAttribute('aria-current');
+      });
+      barLabel(first ? first.innerHTML : esc(fallback || ''));
+    };
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => (e.isIntersecting ? on.add(e.target.id) : on.delete(e.target.id)));
+      paint();
+    }, { rootMargin: '-35% 0px -55% 0px' });
+    links.forEach(a => { const t = document.getElementById(a.dataset.sec); if (t) io.observe(t); });
   }
 
   /* hash targets are rendered by JS, so the browser's own jump happens too early: redo it once
@@ -297,6 +328,6 @@
   window.S3 = {
     D, esc, rich, plain, escRe, asset, secure, paperHref, source, authorsHTML, ifHTML, statusLabel, statusBadge,
     coverOf, paperOfCover, byNo, areas, areaOf, paperCard, metaHTML, linkIcons, profLinks, splitName, initials, personCard,
-    renderChrome, barLabel, landOnHash, lazyImages, manifest, headerArt, SHARED,
+    renderChrome, spy, barLabel, landOnHash, lazyImages, manifest, headerArt, SHARED,
   };
 })();
