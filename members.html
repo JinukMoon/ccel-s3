@@ -13,7 +13,7 @@
 <script src="js/common.js" defer></script>
 <script src="js/members.js" defer></script>
 </head>
-<body>
+<body class="members-page">
 <a class="skip" href="#main">Skip to content</a>
 <div class="rail" id="site-menu"></div>
 
@@ -27,30 +27,36 @@
     <p class="sub" data-m="sub"></p>
   </div>
 </header>
-<nav class="tabs" aria-label="Groups"><div class="wrap" data-m="tabs"></div></nav>
-<main id="main" class="sec" style="padding-top:48px">
+<!-- Current members first; the Alumni button swaps the list (members.html#alumni opens it directly).
+     The group jump links follow the list that is shown. -->
+<nav class="tabs member-tabs" aria-label="Members">
   <div class="wrap">
-    <section id="professor" class="group" aria-labelledby="h-prof" data-m="prof"></section>
+    <div class="view-switch" role="group" aria-label="Show">
+      <a href="#current" data-view-link="current">Current members</a>
+      <a href="#alumni" data-view-link="alumni">Alumni</a>
+    </div>
+    <div class="jumps" data-m="jumps-current"></div>
+    <div class="jumps" data-m="jumps-alumni" hidden></div>
+  </div>
+</nav>
+<main id="main" class="sec members-main">
+  <div class="wrap">
     <div class="toolbar">
       <div class="seg" role="group" aria-label="Show members by research type" data-m="seg">
         <button type="button" data-type="" aria-pressed="true">All</button>
-        <button type="button" data-type="computational" aria-pressed="false">Computational</button>
-        <button type="button" data-type="experimental" aria-pressed="false">Experimental</button>
+        <button type="button" data-type="computational" aria-pressed="false"><span class="dot computational" aria-hidden="true"></span>Computational</button>
+        <button type="button" data-type="experimental" aria-pressed="false"><span class="dot experimental" aria-hidden="true"></span>Experimental</button>
       </div>
       <p class="small" data-m="seg-note" aria-live="polite"></p>
     </div>
-    <div data-m="groups"></div>
-    <section id="alumni" class="group alumni" aria-labelledby="h-alumni">
-      <div class="group-head"><h2 id="h-alumni">Alumni</h2><span data-m="alumni-count"></span></div>
+    <div id="current" class="view" data-m="groups"></div>
+    <section id="alumni" class="view alumni" aria-labelledby="h-alumni" hidden>
+      <div class="alumni-head"><h2 id="h-alumni">Alumni</h2><span data-m="alumni-count"></span></div>
       <div data-m="alumni"></div>
-    </section>
-    <section id="group-photo" class="group" aria-labelledby="h-photo" data-m="photo-sec">
-      <div class="group-head"><h2 id="h-photo">Group photo</h2></div>
-      <figure class="figure group-photo" data-m="photo"></figure>
     </section>
   </div>
 </main>
-<footer class="foot" id="contact" aria-labelledby="h-contact" data-foot></footer>
+<footer class="foot" data-foot></footer>
 </div>
 <noscript><p style="padding:24px;background:#fff">This page renders its content from the lab data file and needs JavaScript.</p></noscript>
 </body>

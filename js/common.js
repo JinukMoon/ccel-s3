@@ -156,7 +156,8 @@
     lines.push(`<p class="role">${esc(group)}${nm.note ? ' &middot; ' + esc(nm.note) : ''}</p>`);
     if (p.type && TYPE[p.type]) lines.push(`<p class="type ${esc(p.type)}">${TYPE[p.type]}</p>`);
     if (opts.alumni) {
-      if (p.current_position && !/^n\/?a$/i.test(String(p.current_position).trim())) lines.push(`<p class="now">${esc(p.current_position)}</p>`);
+      // shown exactly as in the data, "N/A" included (user decision 2026-10-24)
+      if (p.current_position) lines.push(`<p class="now"><span class="k">Current position</span>${esc(p.current_position)}</p>`);
     } else if (p.research_area) lines.push(`<p class="focus">${esc(p.research_area)}</p>`);
     if (opts.full && p.degrees && p.degrees.length) lines.push('<ul class="deg">' + p.degrees.map(d => `<li>${esc(d)}</li>`).join('') + '</ul>');
     if (opts.full && (p.email || p.office)) {
@@ -166,21 +167,21 @@
   }
 
   /* chrome: rail (desktop) doubles as the menu overlay (narrow), topbar logo, footer.
-     Six tabs on every page (as on the current site). Under the current tab a numbered "on this page"
-     list (landing sections 01-04, research areas I-V) keeps the cinematic numbered index. */
+     Six tabs on every page, one file each, as on the current site (round v6). Under the current tab a
+     numbered "on this page" list (landing 01-04, professor 01-03, research I-V) keeps the cinematic index. */
   const TABS = [
     { key: 'home', label: 'Welcome', href: 'index.html' },
-    { key: 'professor', label: 'Professor', href: 'members.html#professor' },
+    { key: 'professor', label: 'Professor', href: 'professor.html' },
     { key: 'members', label: 'Members', href: 'members.html' },
     { key: 'research', label: 'Research', href: 'research.html' },
     { key: 'publications', label: 'Publications', href: 'publications.html' },
-    { key: 'contact', label: 'Contact', href: 'index.html#contact' },
+    { key: 'contact', label: 'Contact', href: 'contact.html' },
   ];
-  const PAGE_LABEL = { home: 'Welcome', members: 'Members', research: 'Research', publications: 'Publications' };
+  const PAGE_LABEL = { home: 'Welcome', professor: 'Professor', members: 'Members', research: 'Research', publications: 'Publications', contact: 'Contact' };
   const logoAlt = () => `${D.lab.short} logo: ${D.lab.name}`;
   const logoImg = () => `<img class="ccel-logo" src="${esc(asset(D.lab.logo))}" alt="${esc(logoAlt())}" width="1304" height="664">`;
-  // on the landing page its own targets become in-page anchors
-  const tabHref = (t, home) => (home ? (t.key === 'home' ? '#main' : t.key === 'contact' ? '#contact' : t.href) : t.href);
+  // on the landing page "Welcome" is the top of the page itself
+  const tabHref = (t, home) => (home && t.key === 'home' ? '#main' : t.href);
 
   // sub: [{ id, n, label }] for the current page; label may hold <sub>/<sup> (rich)
   function renderChrome(page, sub) {
@@ -234,32 +235,31 @@
       if (Math.abs(dy) < 6) return;
       lastY = y;
       if (innerWidth >= 1100 || document.body.classList.contains('menu-open')) return;
+      // a scroll the page made itself (view switch, jump link) never pulls the bar down over the target
+      if (performance.now() < quietUntil) { showBar(false); return; }
       showBar(dy < 0 && !headInView);
     }, { passive: true });
+    hideBarFor = ms => { quietUntil = performance.now() + (ms || 600); showBar(false); };
 
-    /* footer = Contact (index.html#contact), the same on every page */
+    /* footer: lab name, address, email and the six tabs. The full contact details and the group photo
+       live on contact.html (round v6), so the footer there carries no address block. */
     const foot = document.querySelector('[data-foot]');
     if (foot) {
       const c = D.contact;
-      const row = (k, v) => (v ? `<dt>${k}</dt><dd>${v}</dd>` : '');
       foot.innerHTML = `<div class="wrap">
         <a class="ccel-logo-plate" href="index.html">${logoImg()}</a>
         <div class="foot-contact">
-          <h2 id="h-contact">Contact</h2>
           <p class="foot-lab">${esc(c.lab_name)}</p>
-          <dl>
-            ${row('Address', esc(c.address))}
-            ${row('Email', c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : '')}
-            ${row('Professor office', esc(c.professor_office))}
-            ${row('Laboratory', esc(c.laboratory))}
-            ${row('Student office', esc(c.student_office))}
-          </dl>
+          ${page === 'contact' ? '' : `<p>${esc(c.address)}</p>
+          ${c.email ? `<p><a href="mailto:${esc(c.email)}">${esc(c.email)}</a></p>` : ''}
+          <p class="foot-more"><a class="more" href="contact.html">All contact details</a></p>`}
         </div>
-        <nav aria-label="Footer"><ul>${TABS.map(t => `<li><a href="${tabHref(t, home)}">${t.label}</a></li>`).join('')}</ul></nav>
+        <nav aria-label="Footer"><ul>${TABS.map(t => `<li><a href="${tabHref(t, home)}"${t.key === page ? ' aria-current="page"' : ''}>${t.label}</a></li>`).join('')}</ul></nav>
         <p class="copy">&copy; ${new Date().getFullYear()} ${esc(D.lab.short)}, ${esc(D.lab.affiliation)}</p>
       </div>`;
     }
   }
+  let quietUntil = 0, hideBarFor = () => {};
 
   /* the numbered "on this page" list follows the section(s) in view; the slim bar repeats it */
   function spy(fallback) {
@@ -328,6 +328,7 @@
   window.S3 = {
     D, esc, rich, plain, escRe, asset, secure, paperHref, source, authorsHTML, ifHTML, statusLabel, statusBadge,
     coverOf, paperOfCover, byNo, areas, areaOf, paperCard, metaHTML, linkIcons, profLinks, splitName, initials, personCard,
-    renderChrome, spy, barLabel, landOnHash, lazyImages, manifest, headerArt, SHARED,
+    renderChrome, spy, barLabel, landOnHash, lazyImages, manifest, headerArt, SHARED, ICONS, TYPE,
+    hideBar: ms => hideBarFor(ms),
   };
 })();

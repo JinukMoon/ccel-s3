@@ -1,9 +1,14 @@
-/* Members page: professor, current members by data group, alumni. All from window.CCEL. */
+/* Members page (round v6): current members by data group first; an Alumni button swaps in the alumni.
+   No professor section (professor.html) and no group photo (contact.html). All from window.CCEL. */
 (function () {
   'use strict';
-  const S = window.S3, D = S.D, { esc, asset } = S;
+  const S = window.S3, D = S.D, { esc } = S;
   const $ = sel => document.querySelector(sel);
-  const slug = s => 'g-' + String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const slug = (pre, s) => pre + '-' + String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  // old links to the v5 sections that moved to their own pages
+  const old = { professor: 'professor.html', 'group-photo': 'contact.html' }[location.hash.slice(1)];
+  if (old) { location.replace(old); return; }
 
   S.renderChrome('members');
   S.headerArt();
@@ -11,71 +16,93 @@
   const groups = D.members || [], alumni = D.alumni || [];
   const nNow = groups.reduce((s, g) => s + g.people.length, 0);
   const nAlu = alumni.reduce((s, g) => s + g.people.length, 0);
-  $('[data-m=sub]').innerHTML = `<strong>${nNow}</strong> current members in ${groups.length} groups and <strong>${nAlu}</strong> alumni.`;
+  const prof = D.professor;
+  $('[data-m=sub]').innerHTML = `<strong>${nNow}</strong> current members in ${groups.length} groups and <strong>${nAlu}</strong> alumni.
+    <a class="sub-link" href="professor.html">Professor ${esc(prof.name)}</a>`;
 
-  $('[data-m=tabs]').innerHTML = ['<a href="#professor">Professor</a>']
-    .concat(groups.map(g => `<a href="#${slug(g.group)}">${esc(g.group)}</a>`), ['<a href="#alumni">Alumni</a>'],
-      D.contact.group_photo ? ['<a href="#group-photo">Group photo</a>'] : []).join('');
+  $('[data-m=jumps-current]').innerHTML = groups.map(g => `<a href="#${slug('g', g.group)}">${esc(g.group)}</a>`).join('');
+  $('[data-m=jumps-alumni]').innerHTML = alumni.map(g => `<a href="#${slug('a', g.group)}">${esc(g.group)}</a>`).join('');
 
-  /* professor */
-  const p = D.professor;
-  const edu = [];
-  ((p.sections && p.sections.Education) || []).forEach(l => {
-    const t = String(l).replace(/^\s*✔\s*/, '').replace(/\s+,/g, ',').trim();
-    if (!t || t === 'Education') return;
-    if (/^Advisor:/i.test(t) && edu.length) edu[edu.length - 1] += ' — ' + t; else edu.push(t);
-  });
-  $('[data-m=prof]').innerHTML = `
-    <div class="group-head"><h2 id="h-prof">Professor</h2></div>
-    <div class="prof-full">
-      <img src="${esc(asset(p.photo))}" alt="${esc(p.name)}" width="413" height="531" decoding="async">
-      <div>
-        <h3 class="prof-name">${esc(p.name)}</h3>
-        <p>${esc(p.title)}</p>
-        ${(p.roles || []).map(r => `<p class="small">${esc(r)}</p>`).join('')}
-        <p class="prof-links"><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></p>
-        ${S.profLinks(p)}
-        ${edu.length ? `<h4>Education</h4><ul class="edu">${edu.map(e => `<li>${esc(e)}</li>`).join('')}</ul>` : ''}
-        ${p.links && p.links.cv ? `<p class="small">Appointments and editorial service are listed in the <a href="${esc(asset(p.links.cv))}">CV</a>.</p>` : ''}
-      </div>
-    </div>`;
-
-  /* current members */
-  $('[data-m=groups]').innerHTML = groups.map(g => `
-    <section class="group" id="${slug(g.group)}" aria-labelledby="h-${slug(g.group)}">
-      <div class="group-head"><h2 id="h-${slug(g.group)}">${esc(g.group)}</h2><span class="cnt" data-total="${g.people.length}">${g.people.length}</span></div>
-      <ul class="people">${g.people.map(x => S.personCard(x, g.group, { full: true, tag: 'h3' })).join('')}</ul>
-    </section>`).join('');
-
-  /* alumni */
+  const groupHTML = (g, pre, tag, opts) => `
+    <section class="group" id="${slug(pre, g.group)}" aria-labelledby="h-${slug(pre, g.group)}">
+      <div class="group-head"><${tag} id="h-${slug(pre, g.group)}">${esc(g.group)}</${tag}><span class="cnt" data-total="${g.people.length}">${g.people.length}</span></div>
+      <ul class="people">${g.people.map(x => S.personCard(x, g.group, opts)).join('')}</ul>
+    </section>`;
+  $('[data-m=groups]').innerHTML = groups.map(g => groupHTML(g, 'g', 'h2', { full: true, tag: 'h3' })).join('');
   $('[data-m=alumni-count]').textContent = nAlu;
-  $('[data-m=alumni]').innerHTML = alumni.map(g => `
-    <div class="area-group">
-      <h3>${esc(g.group)} <span class="small">${g.people.length}</span></h3>
-      <ul class="people">${g.people.map(x => S.personCard(x, g.group, { alumni: true, full: true, tag: 'h4' })).join('')}</ul>
-    </div>`).join('');
+  $('[data-m=alumni]').innerHTML = alumni.map(g => groupHTML(g, 'a', 'h3', { alumni: true, full: true, tag: 'h4' })).join('');
 
-  /* group photo (moved here from the landing page in round v5) */
-  const gp = D.contact.group_photo;
-  if (gp) $('[data-m=photo]').innerHTML = `<img data-src="${esc(asset(gp))}" alt="${esc(D.lab.short)} group photo" decoding="async" width="6944" height="4496">`;
-  else $('[data-m=photo-sec]').remove();
+  /* view switch. The hash is the state: "" or #current or #g-* = current members, #alumni or #a-* = alumni.
+     Clicks push a history entry, so Back returns to the previous list; hashchange covers Back/Forward
+     and hand-typed hashes. */
+  const views = { current: $('#current'), alumni: $('#alumni') };
+  const jumps = { current: $('[data-m=jumps-current]'), alumni: $('[data-m=jumps-alumni]') };
+  const switchLinks = [...document.querySelectorAll('[data-view-link]')];
+  const bar = $('.member-tabs');
+  let view = null;
+  const viewOf = id => (id === 'alumni' || /^a-/.test(id) ? 'alumni' : 'current');
 
-  /* computational / experimental filter */
+  function setView(v) {
+    if (v === view) return;
+    view = v;
+    Object.keys(views).forEach(k => { views[k].hidden = k !== v; jumps[k].hidden = k !== v; });
+    switchLinks.forEach(a => (a.dataset.viewLink === v ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
+    S.barLabel(v === 'alumni' ? 'Members &middot; Alumni' : 'Members');
+    applyFilter();
+    // photos of the hidden list are already observed by S.lazyImages(); they load once shown and near
+  }
+
+  // the sticky bar is one row on wide screens and two rows on phones: anchors stop just below it
+  const setBarH = () => document.documentElement.style.setProperty('--tabs-h', (bar ? bar.offsetHeight : 0) + 'px');
+  setBarH();
+  addEventListener('resize', setBarH);
+
+  function route(how) {
+    const id = decodeURIComponent(location.hash.slice(1));
+    setView(viewOf(id));
+    if (how === 'load') return;  // S.landOnHash() below places the target after render, fonts and load
+    const t = id && document.getElementById(id);
+    if (!t) return;
+    S.hideBar();
+    if (t === views.current || t === views.alumni) {
+      // switching lists keeps the page where it is, unless the reader is already below the start of the list
+      const y = t.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(t).scrollMarginTop) || 0);
+      if (scrollY > y) scrollTo({ top: y, behavior: 'instant' });
+    } else t.scrollIntoView({ behavior: 'instant', block: 'start' });
+  }
+
+  document.addEventListener('click', e => {
+    const a = e.target.closest('.member-tabs a[href^="#"]');
+    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    if (a.getAttribute('href') !== location.hash) history.pushState(null, '', a.getAttribute('href'));
+    route('click');
+  });
+  addEventListener('hashchange', () => route('nav'));
+  addEventListener('popstate', () => route('nav'));
+
+  /* computational / experimental filter; the coloured dots double as the legend of the cards */
   const seg = $('[data-m=seg]'), note = $('[data-m=seg-note]');
+  let type = '';
+  function applyFilter() {
+    if (!view) return;
+    const box = views[view];
+    let shown = 0;
+    box.querySelectorAll('.person').forEach(li => { const on = !type || li.dataset.type === type; li.hidden = !on; if (on) shown++; });
+    box.querySelectorAll('.group').forEach(sec => {
+      const n = sec.querySelectorAll('.person:not([hidden])').length, c = sec.querySelector('.cnt');
+      c.textContent = type ? `${n} of ${c.dataset.total}` : c.dataset.total;
+    });
+    note.textContent = type ? `${shown} ${view === 'alumni' ? 'alumni' : 'current members'} with ${type} research` : '';
+  }
   seg.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
-    const t = b.dataset.type;
+    type = b.dataset.type;
     seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    let shown = 0;
-    document.querySelectorAll('.person').forEach(li => { const on = !t || li.dataset.type === t; li.hidden = !on; if (on && !li.closest('.alumni')) shown++; });
-    document.querySelectorAll('[data-m=groups] .group').forEach(sec => {
-      const n = sec.querySelectorAll('.person:not([hidden])').length, c = sec.querySelector('.cnt');
-      c.textContent = t ? `${n} of ${c.dataset.total}` : c.dataset.total;
-    });
-    document.querySelectorAll('.alumni .area-group').forEach(gr => { gr.hidden = !gr.querySelector('.person:not([hidden])'); });
-    note.textContent = t ? `${shown} current members with ${t} research` : '';
+    applyFilter();
   });
 
+  route('load');
   S.lazyImages();
   S.landOnHash();
 })();

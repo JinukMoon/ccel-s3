@@ -1,11 +1,13 @@
-/* Landing page: the key information only (stage, news, open position, selected publications, about,
-   contact in the footer). Every fact comes from window.CCEL; the scroll stage itself lives in stage.js.
+/* Landing page: the key information only (stage, news, open position, selected publications, about; the
+   footer carries the address and links to contact.html). Every fact comes from window.CCEL; the scroll stage itself lives in stage.js.
    No counts or totals are shown here (user decision 2026-10-25). */
 (function () {
   'use strict';
   const S = window.S3, D = S.D, { esc, rich, plain, asset, byNo } = S;
   const $ = sel => document.querySelector(sel);
   const fill = (sel, html) => { const el = $(sel); if (el) el.innerHTML = html; };
+  // round v6: Contact is its own page; an old bookmark to the former footer section goes there
+  if (location.hash === '#contact') { location.replace('contact.html'); return; }
 
   S.renderChrome('home', [
     { id: 'news', n: '01', label: 'News' },

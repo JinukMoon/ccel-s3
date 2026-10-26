@@ -291,7 +291,6 @@ details.rules p { max-width: 80ch; }
 .ilink svg { width: 17px; height: 17px; display: block; }
 .ilink:hover, .ilink:focus-visible { color: var(--orange-ink); background: #fff3e6; }
 .person .ilinks { margin-top: auto; padding-top: 8px; }
-.prof-full .ilinks { margin-top: 8px; }
 
 /* news / join / contact */
 .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; }
@@ -309,22 +308,19 @@ details.rules p { max-width: 80ch; }
 .sponsors li { background: #fff; border: 1px solid var(--line); border-radius: 8px; height: 64px; padding: 10px 16px; display: grid; place-items: center; }
 .sponsors img { max-height: 42px; max-width: 150px; width: auto; display: block; }
 
-/* footer = Contact (index.html#contact) */
-.foot { background: var(--navy-950); color: var(--on-dark-2); padding: 64px var(--pad) 40px; font-size: 15px; scroll-margin-top: 0; }
+/* footer: lab name, address, email, the six tabs (full contact details are on contact.html) */
+.foot { background: var(--navy-950); color: var(--on-dark-2); padding: 56px var(--pad) 36px; font-size: 15px; }
 .foot .wrap { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 48px; align-items: start; }
 .foot p { margin: 0 0 6px; }
-.foot h2 { font-size: 26px; line-height: 1.2; color: #fff; font-weight: 700; margin: 0 0 14px; }
-.foot h2::before { content: ""; display: block; width: 26px; height: 3px; background: var(--orange); margin-bottom: 14px; }
-.foot .foot-lab { color: #fff; font-weight: 500; margin-bottom: 14px; }
-.foot dl { margin: 0; display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 8px 20px; }
-.foot dt { color: var(--on-dark-3); font-size: 14px; padding-top: 1px; }
-.foot dd { margin: 0; color: var(--on-dark-2); }
-.foot nav { padding-top: 40px; }
+.foot .foot-lab { color: #fff; font-weight: 500; margin-bottom: 10px; }
+.foot .foot-lab::before { content: ""; display: block; width: 26px; height: 3px; background: var(--orange); margin-bottom: 14px; }
+.foot .foot-more { margin-top: 12px; }
 .foot nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .foot a { color: var(--on-dark-2); text-decoration: none; }
 .foot a:hover { color: #fff; text-decoration: underline; }
+.foot .foot-contact a[href^="mailto:"], .foot .more { color: #fff; text-decoration: underline; }
+.foot nav a[aria-current] { color: #fff; }
 .foot .copy { grid-column: 1 / -1; border-top: 1px solid var(--on-dark-line); padding-top: 16px; color: var(--on-dark-3); font-size: 14px; }
-.foot dd a { color: #fff; text-decoration: underline; }
 
 /* ---------- inner pages ---------- */
 .page-head { position: relative; overflow: hidden; background: var(--navy-900); color: var(--on-dark); padding: 56px var(--pad) 44px; }
@@ -374,29 +370,88 @@ details.rules p { max-width: 80ch; }
 .area-group > h3 { display: flex; gap: 10px; align-items: center; font-size: 19px; color: var(--navy-900); margin: 0 0 14px; }
 .area-group > h3 b { display: inline-grid; place-items: center; min-width: 30px; height: 26px; padding: 0 6px; border-radius: 6px; background: var(--navy-900); color: #fff; font-size: 13px; }
 
-/* members page */
+/* members page: current members first; the Alumni button swaps the list (members.js) */
+.page-head .sub .sub-link { display: inline-block; margin-left: 6px; color: #fff; font-size: 15px; }
+.member-tabs .wrap { display: flex; align-items: center; gap: 16px; overflow: visible; }
+.view-switch { flex: none; display: inline-flex; padding: 3px; border-radius: 999px; background: var(--paper-2); border: 1px solid #c9cdd9; }
+.view-switch a { flex: none; padding: 7px 16px; border: 0; border-radius: 999px; font-size: 14.5px; font-weight: 500; line-height: 1.3; color: var(--navy-700); text-decoration: none; }
+.view-switch a:hover { color: var(--navy-900); background: #fff; }
+.view-switch a[aria-current] { background: var(--navy-900); color: #fff; font-weight: 500; }
+.member-tabs .jumps { display: flex; gap: 4px; min-width: 0; overflow-x: auto; padding-left: 16px; border-left: 1px solid var(--line); scrollbar-width: thin; }
+.member-tabs .jumps a { padding: 15px 10px 13px; }
+.members-main { padding-top: 40px; }
+.members-page .view, .members-page .group { scroll-margin-top: calc(var(--tabs-h, 56px) + 16px); }
 .toolbar { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; margin: 0 0 32px; }
 .seg { display: inline-flex; border: 1px solid #c9cdd9; border-radius: 999px; padding: 3px; background: #fff; }
-.seg button { border: 0; background: transparent; padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: 14px; color: var(--muted); }
+.seg button { display: inline-flex; align-items: center; gap: 7px; border: 0; background: transparent; padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: 14px; color: var(--muted); }
 .seg button[aria-pressed=true] { background: var(--navy-900); color: #fff; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--navy-700); flex: none; }
+.dot.experimental { background: var(--orange); }
+.seg button[aria-pressed=true] .dot.computational { box-shadow: 0 0 0 1.5px #fff; }
 .group { margin: 0 0 56px; scroll-margin-top: 70px; }
 .group-head { display: flex; align-items: baseline; gap: 12px; margin: 0 0 20px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
-.group-head h2 { font-size: 26px; color: var(--navy-900); }
+.group-head h2, .group-head h3 { font-size: 26px; line-height: 1.25; color: var(--navy-900); }
 .group-head span { color: var(--muted); font-size: 15px; }
+.alumni-head { display: flex; align-items: baseline; gap: 12px; margin: 0 0 28px; }
+.alumni-head h2 { font-size: 34px; line-height: 1.2; color: var(--navy-900); letter-spacing: -0.01em; }
+.alumni-head h2::before { content: ""; display: block; width: 26px; height: 3px; background: var(--orange); margin-bottom: 12px; }
+.alumni-head span { color: var(--muted); font-size: 15px; }
+.alumni .group-head h3 { font-size: 22px; }
 .person .deg { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12.5px; line-height: 1.5; color: var(--muted); }
 .person .deg li + li { margin-top: 3px; }
 .person .contact-line { font-size: 12.5px; color: var(--muted); margin: 6px 0 0; overflow-wrap: anywhere; }
 .alumni .person .ph { aspect-ratio: 1 / 1; }
-.group-photo { max-width: 920px; }
-.alumni .person .now { font-size: 13.5px; color: var(--ink); margin: 4px 0 0; line-height: 1.45; }
-.prof-full { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 40px; align-items: start; }
-.prof-full img { width: 220px; aspect-ratio: 413 / 531; object-fit: cover; border-radius: 12px; display: block; }
-.prof-full .prof-name { font-size: 30px; color: var(--navy-900); margin-bottom: 6px; }
-.prof-full p { margin: 4px 0 0; }
-.prof-full .prof-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 14px; font-size: 15px; }
-.prof-full .edu { margin: 10px 0 14px; padding: 0; list-style: none; border-top: 1px solid var(--line); }
-.prof-full .edu li { padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 15.5px; }
-.prof-full h4 { font-size: 18px; color: var(--navy-900); margin-top: 28px; }
+.alumni .person .now { font-size: 13.5px; color: var(--ink); margin: 6px 0 0; line-height: 1.45; }
+.alumni .person .now .k { display: block; font-size: 12px; color: var(--faint); }
+
+/* professor page: profile, then education and experience as a dated CV list */
+.prof-page { padding-top: 56px; }
+.prof-page section { scroll-margin-top: 16px; }
+.prof-page .sec-head { flex-wrap: nowrap; }
+.prof-page .sec-head h2 { min-width: 0; }
+.prof-grid { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 44px; align-items: start; }
+.prof-photo { margin: 0; }
+.prof-photo img { display: block; width: 240px; aspect-ratio: 413 / 531; object-fit: cover; border-radius: 12px; background: var(--paper-2); }
+.prof-info p { margin: 0; }
+.prof-pos { font-size: 22px; line-height: 1.35; font-weight: 500; color: var(--navy-900); }
+.prof-role { margin-top: 4px !important; font-size: 16px; color: var(--ink); }
+.prof-dept { margin-top: 4px !important; font-size: 16px; color: var(--muted); }
+.prof-dl { margin: 24px 0 0; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px 20px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 15.5px; }
+.prof-dl dt { color: var(--faint); font-size: 14px; padding-top: 1px; }
+.prof-dl dd { margin: 0; overflow-wrap: anywhere; }
+.prof-btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px !important; }
+.lbtn { display: inline-flex; align-items: center; gap: 9px; padding: 9px 16px; border: 1px solid #c9cdd9; border-radius: 999px; font-size: 15px; font-weight: 500; color: var(--navy-900); text-decoration: none; background: #fff; }
+.lbtn svg { width: 17px; height: 17px; flex: none; color: var(--navy-700); }
+.lbtn:hover { border-color: var(--navy-700); color: var(--navy-900); background: var(--paper-2); }
+.cv-sec { margin-top: 72px; }
+.cv { list-style: none; margin: 0; padding: 0; }
+.cv-row { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.cv > .cv-row:first-child { padding-top: 0; }
+.cv-row p { margin: 0; }
+.cv-date { font-size: 14.5px; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.cv-what { font-size: 16.5px; line-height: 1.5; font-weight: 500; color: var(--ink); }
+.cv-org { margin-top: 2px !important; font-size: 15.5px; color: var(--ink); }
+.cv-note { margin-top: 4px !important; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+.cv-group + .cv-group { margin-top: 28px; }
+.cv-inst { font-size: 18px; line-height: 1.4; color: var(--navy-900); padding-bottom: 8px; border-bottom: 2px solid var(--navy-900); }
+.cv-roles { list-style: none; margin: 0; padding: 0; }
+.cv-roles .cv-what { font-weight: 400; font-size: 16px; }
+.cv-unit { font-weight: 400; color: var(--muted); }
+.cv-loc { font-size: 14.5px; font-weight: 400; color: var(--muted); margin-left: 8px; }
+#service .cv-what { font-weight: 400; font-size: 16px; }
+
+/* contact page: group photo, then the lab's address and offices */
+.contact-page { padding-top: 48px; }
+.contact-photo { max-width: 100%; }
+.contact-photo a { display: block; }
+.contact-photo img { aspect-ratio: 6944 / 4496; object-fit: cover; }
+.contact-sheet { margin-top: 40px; }
+.contact-sheet h2 { font-size: 28px; line-height: 1.3; color: var(--navy-900); letter-spacing: -0.01em; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.contact-sheet h2::before { content: ""; display: block; width: 26px; height: 3px; background: var(--orange); margin-bottom: 14px; }
+.contact-dl { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; }
+.contact-item { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.contact-item dt { font-size: 14px; color: var(--faint); margin-bottom: 4px; }
+.contact-item dd { margin: 0; font-size: 17px; line-height: 1.55; color: var(--ink); overflow-wrap: anywhere; }
 
 /* ---------- narrow screens ---------- */
 @media (max-width: 1099px) {
@@ -411,8 +466,10 @@ details.rules p { max-width: 80ch; }
   .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .filters .field:first-child { grid-column: 1 / -1; }
   .foot .wrap { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .foot nav { padding-top: 0; }
   .foot nav ul { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .prof-grid { grid-template-columns: 200px minmax(0, 1fr); gap: 32px; }
+  .prof-photo img { width: 200px; }
+  .cv-row { grid-template-columns: 160px minmax(0, 1fr); gap: 18px; }
 }
 @media (max-width: 767px) {
   :root { --pad: 20px; }
@@ -444,8 +501,6 @@ details.rules p { max-width: 80ch; }
   .ilinks { margin-left: -9px; }
   .person h3, .person h4 { font-size: 15.5px; }
   .foot { padding-top: 48px; }
-  .foot dl { grid-template-columns: minmax(0, 1fr); gap: 2px; }
-  .foot dd { margin-bottom: 10px; }
   .research-page { padding-top: 40px; }
   .page-head { padding: 16px var(--pad) 32px; }
   .page-head h1 { font-size: 32px; }
@@ -455,7 +510,34 @@ details.rules p { max-width: 80ch; }
   .filters .field:nth-child(4), .filters .field.check { grid-column: 1 / -1; }
   .pub { grid-template-columns: minmax(0, 1fr); gap: 4px; }
   .year-head { top: 56px; }
-  .prof-full { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-  .prof-full img { width: 160px; }
+  /* members: the view switch gets its own full-width row above the group links */
+  .member-tabs { padding: 8px var(--pad) 0; }
+  .member-tabs .wrap { flex-direction: column; align-items: stretch; gap: 4px; }
+  .view-switch { display: grid; grid-template-columns: 1fr 1fr; }
+  .view-switch a { text-align: center; padding: 8px 10px; }
+  .member-tabs .jumps { padding-left: 0; border-left: 0; margin: 0 calc(-1 * var(--pad)); padding: 0 calc(var(--pad) - 10px); }
+  .member-tabs .jumps a { padding: 11px 10px 10px; font-size: 14.5px; }
+  .members-main { padding-top: 28px; }
+  .alumni-head h2 { font-size: 27px; }
+  .alumni .group-head h3, .group-head h2 { font-size: 22px; }
+  .page-head .sub .sub-link { display: block; margin: 6px 0 0; }
+  /* professor */
+  .prof-page { padding-top: 40px; }
+  .prof-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .prof-photo img { width: 168px; }
+  .prof-pos { font-size: 19px; }
+  .prof-dl { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .prof-dl dt { margin-top: 10px; }
+  .prof-dl dt:first-child { margin-top: 0; }
+  .cv-sec { margin-top: 56px; }
+  .cv-row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .cv-inst { font-size: 17px; }
+  .cv-loc { display: block; margin: 2px 0 0; }
+  /* contact */
+  .contact-page { padding-top: 28px; }
+  .contact-sheet { margin-top: 28px; }
+  .contact-sheet h2 { font-size: 22px; }
+  .contact-dl { grid-template-columns: minmax(0, 1fr); }
+  .contact-item dd { font-size: 16px; }
   .covers { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 14px; }
 }
